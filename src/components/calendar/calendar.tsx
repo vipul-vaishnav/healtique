@@ -3,7 +3,6 @@ import DateCell from './date-cell'
 import CalendarWeeks from './calendar-weeks'
 import CalendarHeader from './calendar-header'
 import { endOfMonth, getDaysInMonth, startOfMonth, setDate, format } from 'date-fns'
-import { createId } from '@paralleldrive/cuid2'
 import { toast } from 'sonner'
 import { Calendar1Icon } from 'lucide-react'
 
@@ -55,8 +54,8 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     <div className="grid grid-cols-7">
       <CalendarHeader viewDate={viewDate} setViewDate={setViewDate} />
       <CalendarWeeks days={DAYS} />
-      {Array.from({ length: preDays }).map(() => (
-        <div key={createId()}>&nbsp;</div>
+      {Array.from({ length: preDays }).map((_, idx) => (
+        <div key={`${idx}-pre`}>&nbsp;</div>
       ))}
       {Array.from({ length: numberOfDays }).map((_, idx) => {
         const date = idx + 1
@@ -67,14 +66,14 @@ const Calendar: React.FC<CalendarProps> = (props) => {
             handleDateClick={() => handleDateClick(date)}
             isSelected={isSelected}
             isToday={isToday}
-            key={createId()}
+            key={`${idx}-date`}
           >
             {date}
           </DateCell>
         )
       })}
-      {Array.from({ length: postDays }).map(() => (
-        <div key={createId()}>&nbsp;</div>
+      {Array.from({ length: postDays }).map((_, idx) => (
+        <div key={`${idx}-post`}>&nbsp;</div>
       ))}
     </div>
   )
