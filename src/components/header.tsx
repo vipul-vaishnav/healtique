@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = (props) => {
       <div className="flex items-center gap-4">
         <h1 className="font-bold text-2xl">
           <span>Heal</span>
-          <span className="text-[#7950f2]">Tique.</span>
+          <span className="text-chart-4">Tique.</span>
         </h1>
         <p className="font-semibold text-sm">{format(date, 'MMMM dd, yyyy')}</p>
       </div>

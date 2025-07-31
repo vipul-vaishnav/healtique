@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Sora } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const sora = Sora({
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sora.className} antialiased`}>{children}</body>
+      <body className={`${sora.className} antialiased`}>
+        <Toaster position="top-center" />
+        {children}
+      </body>
     </html>
   )
 }
