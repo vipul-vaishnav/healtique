@@ -3,13 +3,30 @@
 import Calendar from '@/components/calendar/calendar'
 import Header from '@/components/header'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useTheme } from '@/hooks/use-theme'
 import React, { useMemo, useState } from 'react'
 
 export default function Home() {
+  const { theme } = useTheme()
   const today = useMemo(() => {
     return new Date()
   }, [])
   const [selectedDate, setSelectedDate] = useState<Date>(today)
+
+  if (!theme) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <div
+          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+          role="status"
+        >
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <main
