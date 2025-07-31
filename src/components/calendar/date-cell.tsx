@@ -12,9 +12,9 @@ const DateCell: React.FC<DateCellProps> = (props) => {
   return (
     <button
       onClick={handleDateClick}
-      className={`aspect-square border flex items-center justify-center hover:bg-accent transition-all duration-300 ${
+      className={`aspect-square border flex items-center justify-center hover:bg-border transition-all duration-300 ${
         isSelected && 'border-purple-600 text-white bg-chart-4 hover:bg-chart-4'
-      } ${isToday && 'border-2 border-black'}`}
+      } ${isToday && 'border-2 bg-border'}`}
     >
       {children}
     </button>

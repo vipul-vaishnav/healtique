@@ -2,6 +2,7 @@
 
 import Calendar from '@/components/calendar/calendar'
 import Header from '@/components/header'
+import SlotsView from '@/components/slots/slots-view'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useTheme } from '@/hooks/use-theme'
 import React, { useMemo, useState } from 'react'
@@ -37,14 +38,7 @@ export default function Home() {
       <section className="grid grid-cols-[1fr_480px] bg-muted">
         <ScrollArea className="border-r h-[calc(100dvh-64px)]">
           <div className="p-6 space-y-4">
-            {[...Array(27)].map((_, i) => (
-              <div key={i} className="border rounded-lg p-4 bg-background transition">
-                <p className="text-sm font-medium">
-                  🕒 Slot {i + 1} — {(10.5 + i * 0.25).toFixed(2)} hrs
-                </p>
-                <p className="text-muted-foreground text-xs">Details go here</p>
-              </div>
-            ))}
+            <SlotsView />
           </div>
         </ScrollArea>
         <ScrollArea className="h-[calc(100dvh-64px)]">
@@ -59,17 +53,6 @@ export default function Home() {
                 <li>🩺 Dr. Strange Consultation - 11:00 AM</li>
                 <li>💊 Medicine Reminder - 5:00 PM</li>
               </ul>
-            </div>
-            <div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima molestiae dolore,
-              deserunt veritatis maxime cum at? Cupiditate, officiis! Quia, quae. Nisi, delectus
-              asperiores velit inventore repellat, pariatur earum dicta expedita sit iure laborum
-              ipsum omnis autem cupiditate ut vitae ad sequi commodi quod assumenda quo. Tenetur
-              numquam vel mollitia. Eaque omnis vel dolore unde itaque ut aut. Nam, debitis minima
-              mollitia non quisquam repellat illum aut magnam pariatur, ad veritatis a voluptatibus
-              tempore? Officia, similique enim sit dolore velit quia nulla nesciunt architecto
-              aperiam modi, commodi unde ipsam dolorem temporibus magni. Repudiandae tempore
-              distinctio dolorem ducimus recusandae? Earum, ducimus accusamus!
             </div>
           </div>
         </ScrollArea>
