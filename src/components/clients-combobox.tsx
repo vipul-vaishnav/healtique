@@ -14,17 +14,17 @@ import {
   CommandList
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { useClients } from '@/hooks/use-clients'
+import { Client } from '@/hooks/use-clients'
 import CustomAvatar from './custom-avatar'
 
 type Props = {
+  clients: Client[]
   value: string
   setValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 export function ClientsCombobox(props: Props) {
-  const clients = useClients()
-  const { value, setValue } = props
+  const { value, setValue, clients } = props
   const [open, setOpen] = React.useState(false)
 
   const selectedClient = clients.find(

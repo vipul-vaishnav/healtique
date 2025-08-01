@@ -1,4 +1,3 @@
-import { createId } from '@paralleldrive/cuid2'
 import React, { useEffect, useState } from 'react'
 import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
@@ -16,65 +15,18 @@ export type TimeSlot = {
 
 export type Booking = {
   type: 'onboarding' | 'followup'
-  startTime: number // minutes from midnight
+  startTime: number // minutes from midnight 10:30 -> 630, 7:30 -> 19 * 60 + 30
   duration: number // in minutes
-  clientName: string
-  emoji: string
-  label: string
-}
-
-let dummyBookings: Booking[] = [
-  {
-    type: 'onboarding',
-    startTime: 630, // 10:30 AM
-    duration: 40,
-    clientName: 'Alice',
-    emoji: '🦊',
-    label: 'Kickoff Call'
-  },
-  {
-    type: 'followup',
-    startTime: 690, // 11:30 AM
-    duration: 20,
-    clientName: 'Bob',
-    emoji: '🐻',
-    label: 'Check-in'
-  },
-  {
-    type: 'followup',
-    startTime: 810, // 1:30 PM
-    duration: 20,
-    clientName: 'Charlie',
-    emoji: '🦁',
-    label: 'Status Update'
-  },
-  {
-    type: 'onboarding',
-    startTime: 870, // 2:30 PM
-    duration: 40,
-    clientName: 'Diana',
-    emoji: '🦄',
-    label: 'Onboarding'
-  },
-  {
-    type: 'followup',
-    startTime: 1050, // 5:30 PM
-    duration: 20,
-    clientName: 'Eve',
-    emoji: '🐱',
-    label: 'Follow-up'
-  },
-  {
-    type: 'followup',
-    startTime: 1110, // 6:30 PM
-    duration: 20,
-    clientName: 'Frank',
-    emoji: '🦉',
-    label: 'Feedback'
+  client: {
+    id: string
+    fullName: string
+    phoneNumber: string
   }
-]
-
-dummyBookings = dummyBookings.map((booking) => ({ ...booking, id: createId() }))
+  title: string
+  date: Date
+  dayOfWeek?: number // 0 -> Sun && 6 -> Sat
+  note?: string
+}
 
 const getTotalSlots = () => {
   const start = 10 * 60 + 30 //10:30am
@@ -101,7 +53,7 @@ const generateSlotsObjArray = () => {
 const SlotsView: React.FC<SlotsViewProps> = (props) => {
   const { selectedDate } = props
   const slots = generateSlotsObjArray()
-  const [bookings, setBookings] = useState<Booking[]>(dummyBookings)
+  const [bookings, setBookings] = useState<Booking[]>([])
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [open, setOpen] = useState(false)
 

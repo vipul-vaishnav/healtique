@@ -2,26 +2,39 @@ import { db } from '@/firebase/firebase.config'
 import { collection, getDocs } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
-type Client = {
+export type Client = {
   id: string
   fullName: string
   phoneNumber: string
 }
 
-export function useClients(): Array<Client> {
+type UseClientsReturnType = {
+  clients: Client[]
+  loading: boolean
+}
+
+export function useClients(): UseClientsReturnType {
   const [clients, setClients] = useState<Array<Client>>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getClients = async () => {
-      const querySnapshot = await getDocs(collection(db, 'clients'))
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Client[]
-      setClients(data)
+      try {
+        setLoading(true)
+        const querySnapshot = await getDocs(collection(db, 'clients'))
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Client[]
+        setClients(data)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
     }
     getClients()
   }, [])
 
-  return clients
+  return { clients, loading }
 }
