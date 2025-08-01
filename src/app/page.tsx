@@ -38,7 +38,7 @@ export default function Home() {
       <section className="grid grid-cols-[1fr_480px] bg-muted">
         <ScrollArea className="border-r h-[calc(100dvh-64px)]">
           <div className="p-6 space-y-4">
-            <SlotsView />
+            <SlotsView selectedDate={selectedDate} />
           </div>
         </ScrollArea>
         <ScrollArea className="h-[calc(100dvh-64px)]">

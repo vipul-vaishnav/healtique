@@ -1,12 +1,12 @@
 import { createId } from '@paralleldrive/cuid2'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
 import SlotTime from './slot-time'
 import SlotBookingDialog from './slot-booking-dialog'
 
 type SlotsViewProps = {
-  dummy?: boolean
+  selectedDate: Date
 }
 
 export type TimeSlot = {
@@ -98,11 +98,25 @@ const generateSlotsObjArray = () => {
   return slots
 }
 
-const SlotsView: React.FC<SlotsViewProps> = () => {
+const SlotsView: React.FC<SlotsViewProps> = (props) => {
+  const { selectedDate } = props
   const slots = generateSlotsObjArray()
   const [bookings, setBookings] = useState<Booking[]>(dummyBookings)
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [open, setOpen] = useState(false)
+
+  const isNextSlotAvailable = (): boolean => {
+    if (selectedSlot === 1150) return false
+    if (selectedSlot !== null) {
+      const nextSlot = selectedSlot + 20
+      const hasBooking = bookings.find((item) => item.startTime === nextSlot)
+      return !Boolean(hasBooking)
+    } else return false
+  }
+
+  useEffect(() => {
+    if (!open) setSelectedSlot(null)
+  }, [open])
 
   const generateSlotsWithBookings = () => {
     const bookingSlots: Array<{
@@ -113,7 +127,9 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
     }> = []
     for (let i = 0; i < slots.length; ) {
       const slot = slots[i]
-      const booking = bookings.find((booking) => booking.startTime === slot.startTime)
+      const booking = bookings
+        .sort((a, b) => a.startTime - b.startTime)
+        .find((booking) => booking.startTime === slot.startTime)
       if (booking) {
         const span = booking.duration / 20
         bookingSlots.push({
@@ -137,7 +153,14 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
 
   return (
     <section className="space-y-8">
-      <SlotBookingDialog open={open} setOpen={setOpen} />
+      <SlotBookingDialog
+        setBookings={setBookings}
+        selectedDate={selectedDate}
+        open={open}
+        setOpen={setOpen}
+        selectedSlot={selectedSlot}
+        isNextSlotAvailable={isNextSlotAvailable()}
+      />
       <div className="bg-background rounded-xl grid grid-cols-[144px_1fr] overflow-hidden">
         <div>
           {slots.map((slot, idx) => {

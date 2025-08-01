@@ -17,10 +17,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useClients } from '@/hooks/use-clients'
 import CustomAvatar from './custom-avatar'
 
-export function ClientsCombobox() {
+type Props = {
+  value: string
+  setValue: React.Dispatch<React.SetStateAction<string>>
+}
+
+export function ClientsCombobox(props: Props) {
   const clients = useClients()
+  const { value, setValue } = props
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState('')
 
   const selectedClient = clients.find(
     (client) => client.fullName === value || client.phoneNumber === value
