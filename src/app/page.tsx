@@ -4,8 +4,10 @@ import Calendar from '@/components/calendar/calendar'
 import Header from '@/components/header'
 import SlotsView from '@/components/slots/slots-view'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { db } from '@/firebase/firebase.config'
 import { useTheme } from '@/hooks/use-theme'
-import React, { useMemo, useState } from 'react'
+import { collection, getDocs } from 'firebase/firestore'
+import React, { useEffect, useMemo, useState } from 'react'
 
 export default function Home() {
   const { theme } = useTheme()
@@ -13,6 +15,24 @@ export default function Home() {
     return new Date()
   }, [])
   const [selectedDate, setSelectedDate] = useState<Date>(today)
+  const [clients, setClients] = useState<Array<{ fullName: string }>>([])
+
+  useEffect(() => {
+    const getClients = async () => {
+      const querySnapshot = await getDocs(collection(db, 'clients'))
+      const fetchedClients: typeof clients = []
+      querySnapshot.forEach((item) => {
+        const document = item.data({
+          serverTimestamps: 'estimate'
+        })
+        fetchedClients.push(document as (typeof clients)[0])
+      })
+      setClients(fetchedClients)
+    }
+    getClients()
+  }, [])
+
+  console.log(clients)
 
   if (!theme) {
     return (
