@@ -1,15 +1,16 @@
 import { db } from './../firebase/firebase.config'
 import { fakerEN_IN as faker } from '@faker-js/faker'
-import { addDoc, collection } from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 
 // **IMP NOTE** :- process.env.ANY_VALUE_OF_CONFIG is undefined to seed db either use dotenv or use direct values in firebase config otherwise the script will give error
 
-const generateFakeClient = (): {
+const generateFakeClient = (
+  idx: number
+): {
   fullName: string
   phone: string
 } => {
-  const random = Math.floor(Math.random() * 2)
-  const firstName = faker.person.firstName(random === 0 ? 'male' : 'female').trim()
+  const firstName = faker.person.firstName(idx % 2 === 0 ? 'male' : 'female').trim()
   const lastName = faker.person.lastName().trim()
 
   const rawPhone = faker.phone
@@ -30,11 +31,12 @@ const generateFakeClient = (): {
 async function seedDb() {
   try {
     for (let i = 0; i < 20; i++) {
-      const client = generateFakeClient()
+      const client = generateFakeClient(i)
       console.log(client)
       const docRef = await addDoc(collection(db, 'clients'), {
         fullName: client.fullName,
-        phoneNumber: client.phone
+        phoneNumber: client.phone,
+        createdAt: serverTimestamp()
       })
     }
   } catch (error) {
