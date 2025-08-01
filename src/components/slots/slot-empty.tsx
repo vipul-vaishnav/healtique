@@ -34,7 +34,7 @@ const SlotEmpty: React.FC<SlotEmptyProps> = ({
           handleAvailableSlotClick()
         }
       }}
-      className={`h-24 border-b w-full flex items-center justify-center text-sm font-semibold text-muted-foreground relative`}
+      className={`h-28 border-b w-full flex items-center justify-center text-sm font-semibold text-muted-foreground relative`}
     >
       {isExpiredSlot && (
         <div className="absolute grid grid-cols-9 bg-transparent w-full h-32">

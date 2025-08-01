@@ -18,7 +18,7 @@ const SlotTime: React.FC<SlotTimeProps> = ({ slot }) => {
   const label = getLabel(slot.startTime)
   const subLabel = `${label} - ${getLabel(slot.endTime)}`
   return (
-    <div className="h-24 p-4 w-36 border-b border-r">
+    <div className="h-28 p-4 w-36 border-b border-r">
       <p className="text-sm font-semibold">{label}</p>
       <p className="text-[10px] mt-1 font-light text-muted-foreground">{subLabel}</p>
     </div>

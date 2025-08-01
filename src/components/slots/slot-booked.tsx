@@ -28,8 +28,8 @@ const SlotBooked: React.FC<SlotBookedProps> = (props) => {
 
   return (
     <div
-      className={`h-24 border-l-5 border-b ${bookingBg} ${bookingBorder} dark:backdrop-blur-3xl text-sm font-normal p-2`}
-      style={{ height: `${slot.span * 6}rem` }}
+      className={`border-l-5 border-b ${bookingBg} ${bookingBorder} dark:backdrop-blur-3xl text-sm font-normal p-2`}
+      style={{ height: `${slot.span * 7}rem` }}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ const SlotBooked: React.FC<SlotBookedProps> = (props) => {
           <Trash2 />
         </Button>
       </div>
-      <div className="mt-2 space-y-2">
+      <div className="mt-1 space-y-1">
         <p className="text-sm font-medium">{slot.booking!.title}</p>
         <p className="text-xs text-muted-foreground">{slot.booking?.note}</p>
       </div>

@@ -3,6 +3,9 @@ import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
 import SlotTime from './slot-time'
 import SlotBookingDialog from './slot-booking-dialog'
+import { collection, getDocs, query, where, and } from 'firebase/firestore'
+import { db } from '@/firebase/firebase.config'
+import { getDay } from 'date-fns'
 
 type SlotsViewProps = {
   selectedDate: Date
@@ -52,12 +55,13 @@ const generateSlotsObjArray = () => {
 
 const SlotsView: React.FC<SlotsViewProps> = (props) => {
   const { selectedDate } = props
+
   const slots = generateSlotsObjArray()
+
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [open, setOpen] = useState(false)
-
-  console.log(bookings)
 
   const isNextSlotAvailable = (): boolean => {
     if (selectedSlot === 1150) return false
@@ -67,10 +71,6 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
       return !Boolean(hasBooking)
     } else return false
   }
-
-  useEffect(() => {
-    if (!open) setSelectedSlot(null)
-  }, [open])
 
   const generateSlotsWithBookings = () => {
     const bookingSlots: Array<{
@@ -104,6 +104,45 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
     }
     return bookingSlots
   }
+
+  useEffect(() => {
+    const getBookingPerDate = async () => {
+      try {
+        setIsLoading(true)
+        const bookingsRef = collection(db, 'bookings')
+
+        const q1 = query(
+          bookingsRef,
+          and(where('date', '==', selectedDate), where('type', '==', 'onboarding'))
+        )
+        const snap1 = await getDocs(q1)
+        const oneTime = snap1.docs.map((doc) => doc.data())
+
+        console.log(oneTime)
+
+        const q2 = query(
+          bookingsRef,
+          and(where('dayOfWeek', '==', getDay(selectedDate)), where('type', '==', 'followup'))
+        )
+        const snap2 = await getDocs(q2)
+        const recurring = snap2.docs.map((doc) => doc.data())
+
+        console.log(recurring)
+
+        const finalBookings = [...oneTime, ...recurring] as Booking[]
+        setBookings(finalBookings)
+      } catch (error) {
+        console.log('[Bookings_fetch_ERR] ', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    getBookingPerDate()
+  }, [selectedDate])
+
+  useEffect(() => {
+    if (!open) setSelectedSlot(null)
+  }, [open])
 
   return (
     <section className="space-y-8">
