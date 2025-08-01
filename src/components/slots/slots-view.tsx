@@ -97,7 +97,7 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
         i += span
       } else {
         bookingSlots.push({
-          type: 'booked',
+          type: 'empty',
           startTime: slot.startTime,
           span: 1
         })

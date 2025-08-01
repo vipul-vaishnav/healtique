@@ -27,6 +27,10 @@ const SlotBooked: React.FC<SlotBookedProps> = (props) => {
   const bookingBorder = border(slot.booking!)
   const [open, setOpen] = useState(false)
 
+  if (slot.type !== 'booked' || !slot.booking) {
+    return null
+  }
+
   return (
     <div
       className={`border-l-5 border-b ${bookingBg} ${bookingBorder} dark:backdrop-blur-3xl text-sm font-normal p-2`}

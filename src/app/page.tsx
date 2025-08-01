@@ -19,8 +19,6 @@ export default function Home() {
   const [todaysBookings, setTodaysBookings] = useState<Booking[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  console.log(todaysBookings)
-
   useEffect(() => {
     const getBookingToday = async () => {
       try {
