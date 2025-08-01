@@ -27,9 +27,7 @@ export function ClientsCombobox(props: Props) {
   const { value, setValue, clients } = props
   const [open, setOpen] = React.useState(false)
 
-  const selectedClient = clients.find(
-    (client) => client.fullName === value || client.phoneNumber === value
-  )
+  const selectedClient = clients.find((client) => client.id === value)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,15 +42,16 @@ export function ClientsCombobox(props: Props) {
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full p-0 h-auto">
         <Command
           filter={(value, search) => {
-            const client = clients.find((c) => c.fullName === value || c.phoneNumber === value)
+            const client = clients.find((c) => c.id === value)
             if (!client) return 0
             const searchLower = search.toLowerCase()
-            const matchesName = client.fullName.toLowerCase().includes(searchLower)
-            const matchesPhone = client.phoneNumber.includes(search)
-            return matchesName || matchesPhone ? 1 : 0
+            return client.fullName.toLowerCase().includes(searchLower) ||
+              client.phoneNumber.includes(search)
+              ? 1
+              : 0
           }}
         >
           <CommandInput placeholder="Search by name or phone..." />
@@ -60,13 +59,13 @@ export function ClientsCombobox(props: Props) {
             <CommandEmpty>No Client Found.</CommandEmpty>
             <CommandGroup>
               {clients.map((client) => {
-                const isSelected = value === client.fullName || value === client.phoneNumber
+                const isSelected = value === client.id
                 return (
                   <CommandItem
                     key={client.id}
-                    value={client.fullName}
+                    value={client.id}
                     onSelect={() => {
-                      setValue(client.fullName)
+                      setValue(isSelected ? '' : client.id)
                       setOpen(false)
                     }}
                   >

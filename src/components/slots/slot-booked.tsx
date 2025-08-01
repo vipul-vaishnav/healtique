@@ -1,5 +1,8 @@
 import React from 'react'
 import { Booking } from './slots-view'
+import CustomAvatar from '../custom-avatar'
+import { Trash2 } from 'lucide-react'
+import { Button } from '../ui/button'
 
 type SlotBookedProps = {
   slot: {
@@ -28,10 +31,22 @@ const SlotBooked: React.FC<SlotBookedProps> = (props) => {
       className={`h-24 border-l-5 border-b ${bookingBg} ${bookingBorder} dark:backdrop-blur-3xl text-sm font-normal p-2`}
       style={{ height: `${slot.span * 6}rem` }}
     >
-      <p className="text-sm font-semibold">
-        {slot.booking!.emoji} {slot.booking!.clientName}
-      </p>
-      <p className="text-xs">{slot.booking!.label}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CustomAvatar
+            fullName={slot.booking?.client.fullName ?? ''}
+            phoneNumber={slot.booking?.client.phoneNumber ?? ''}
+          />
+          <p className="font-semibold">{slot.booking?.client.fullName}</p>
+        </div>
+        <Button variant={'ghost'} size={'icon'}>
+          <Trash2 />
+        </Button>
+      </div>
+      <div className="mt-2 space-y-2">
+        <p className="text-sm font-medium">{slot.booking!.title}</p>
+        <p className="text-xs text-muted-foreground">{slot.booking?.note}</p>
+      </div>
     </div>
   )
 }

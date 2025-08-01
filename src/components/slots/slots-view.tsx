@@ -57,6 +57,8 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [open, setOpen] = useState(false)
 
+  console.log(bookings)
+
   const isNextSlotAvailable = (): boolean => {
     if (selectedSlot === 1150) return false
     if (selectedSlot !== null) {

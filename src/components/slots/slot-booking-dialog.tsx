@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,6 +17,7 @@ import { Textarea } from '../ui/textarea'
 import { Booking } from './slots-view'
 import { getDay } from 'date-fns'
 import { useClients } from '@/hooks/use-clients'
+import { toast } from 'sonner'
 
 type SlotBookingDialogProps = {
   selectedSlot: number | null
@@ -36,14 +37,27 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
   const [call, setCall] = useState<Booking['type']>()
 
   const handleCallBook = () => {
+    if (!title) {
+      return toast.error('Title is missing!')
+    } else if (!call) {
+      return toast.error('Select a call type')
+    } else if (!value) {
+      return toast.error('Please select a client')
+    }
+
+    const clientVal = clients.find((client) => client.id === value)
+    if (!clientVal) {
+      return toast.error('Client not found')
+    }
+
     setBookings((prev) => {
       const updated: Booking[] = [
         ...prev,
         {
           client: {
-            fullName: '',
-            id: '',
-            phoneNumber: ''
+            fullName: clientVal?.fullName,
+            id: clientVal?.id,
+            phoneNumber: clientVal?.phoneNumber
           },
           date: selectedDate,
           duration: call === 'followup' ? 20 : 40,
@@ -58,6 +72,15 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
     })
     setOpen(false)
   }
+
+  const resetForm = () => {
+    setTitle('')
+    setCall(undefined)
+    setValue('')
+    setNote('')
+  }
+
+  useEffect(resetForm, [open])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
