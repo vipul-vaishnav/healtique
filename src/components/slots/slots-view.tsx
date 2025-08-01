@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
 import SlotTime from './slot-time'
+import { ClientsCombobox } from '../clients-combobox'
 
 type SlotsViewProps = {
   dummy?: boolean
@@ -127,6 +128,7 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
 
   return (
     <section className="space-y-8">
+      <ClientsCombobox />
       <div className="bg-background rounded-xl grid grid-cols-[144px_1fr] overflow-hidden">
         <div>
           {slots.map((slot, idx) => {

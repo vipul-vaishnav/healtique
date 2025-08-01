@@ -1,0 +1,87 @@
+'use client'
+
+import * as React from 'react'
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useClients } from '@/hooks/use-clients'
+import CustomAvatar from './custom-avatar'
+
+export function ClientsCombobox() {
+  const clients = useClients()
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState('')
+
+  const selectedClient = clients.find(
+    (client) => client.fullName === value || client.phoneNumber === value
+  )
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+        >
+          {selectedClient ? selectedClient.fullName : 'Select Client...'}
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command
+          filter={(value, search) => {
+            const client = clients.find((c) => c.fullName === value || c.phoneNumber === value)
+            if (!client) return 0
+            const searchLower = search.toLowerCase()
+            const matchesName = client.fullName.toLowerCase().includes(searchLower)
+            const matchesPhone = client.phoneNumber.includes(search)
+            return matchesName || matchesPhone ? 1 : 0
+          }}
+        >
+          <CommandInput placeholder="Search by name or phone..." />
+          <CommandList>
+            <CommandEmpty>No Client Found.</CommandEmpty>
+            <CommandGroup>
+              {clients.map((client) => {
+                const isSelected = value === client.fullName || value === client.phoneNumber
+                return (
+                  <CommandItem
+                    key={client.id}
+                    value={client.fullName}
+                    onSelect={() => {
+                      setValue(client.fullName)
+                      setOpen(false)
+                    }}
+                  >
+                    <CheckIcon
+                      className={cn('mr-2 h-4 w-4', isSelected ? 'opacity-100' : 'opacity-0')}
+                    />
+                    <div className="flex items-center gap-2">
+                      <CustomAvatar fullName={client.fullName} phoneNumber={client.phoneNumber} />
+                      <div className="flex flex-col">
+                        <span>{client.fullName}</span>
+                        <span className="text-xs text-muted-foreground">{client.phoneNumber}</span>
+                      </div>
+                    </div>
+                  </CommandItem>
+                )
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
