@@ -178,7 +178,7 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
         <div>
           {generateSlotsWithBookings().map((slot, idx) => {
             if (slot.booking) {
-              return <SlotBooked key={`${idx}-slot-booked`} slot={slot} />
+              return <SlotBooked key={`${idx}-slot-booked`} slot={slot} setBookings={setBookings} />
             } else {
               return (
                 <SlotEmpty

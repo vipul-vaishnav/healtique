@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Booking } from './slots-view'
 import CustomAvatar from '../custom-avatar'
-import { Trash2 } from 'lucide-react'
-import { Button } from '../ui/button'
+import { SlotDeleteDialog } from './slot-delete-dialog'
 
 type SlotBookedProps = {
   slot: {
@@ -11,6 +10,7 @@ type SlotBookedProps = {
     span: number
     startTime: number
   }
+  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>
 }
 
 const bg = (booking: Booking) =>
@@ -22,9 +22,10 @@ const border = (booking: Booking) =>
   booking.type === 'onboarding' ? 'border-l-5 border-l-[#5C6CC6]' : 'border-l-5 border-l-[#44B259]'
 
 const SlotBooked: React.FC<SlotBookedProps> = (props) => {
-  const { slot } = props
+  const { slot, setBookings } = props
   const bookingBg = bg(slot.booking!)
   const bookingBorder = border(slot.booking!)
+  const [open, setOpen] = useState(false)
 
   return (
     <div
@@ -39,9 +40,12 @@ const SlotBooked: React.FC<SlotBookedProps> = (props) => {
           />
           <p className="font-semibold">{slot.booking?.client.fullName}</p>
         </div>
-        <Button variant={'ghost'} size={'icon'}>
-          <Trash2 />
-        </Button>
+        <SlotDeleteDialog
+          open={open}
+          setOpen={setOpen}
+          id={slot.booking?.id ?? ''}
+          setBookings={setBookings}
+        />
       </div>
       <div className="mt-1 space-y-1">
         <p className="text-sm font-medium">{slot.booking!.title}</p>

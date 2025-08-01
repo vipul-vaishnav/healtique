@@ -15,7 +15,7 @@ import { Input } from '../ui/input'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Textarea } from '../ui/textarea'
 import { Booking } from './slots-view'
-import { getDay } from 'date-fns'
+import { format, getDay } from 'date-fns'
 import { useClients } from '@/hooks/use-clients'
 import { toast } from 'sonner'
 import { addDoc, collection } from 'firebase/firestore'
@@ -156,7 +156,7 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
                 id="date"
                 name="title"
                 type="date"
-                defaultValue={selectedDate.toISOString().split('T')[0]}
+                defaultValue={format(selectedDate, 'yyyy-MM-dd')}
                 readOnly
                 disabled
               />
