@@ -18,6 +18,8 @@ import { Booking } from './slots-view'
 import { getDay } from 'date-fns'
 import { useClients } from '@/hooks/use-clients'
 import { toast } from 'sonner'
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from '@/firebase/firebase.config'
 
 type SlotBookingDialogProps = {
   selectedSlot: number | null
@@ -35,8 +37,9 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
   const [note, setNote] = useState('')
   const [value, setValue] = useState('')
   const [call, setCall] = useState<Booking['type']>()
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleCallBook = () => {
+  const handleCallBook = async () => {
     if (!title) {
       return toast.error('Title is missing!')
     } else if (!call) {
@@ -50,27 +53,36 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
       return toast.error('Client not found')
     }
 
-    setBookings((prev) => {
-      const updated: Booking[] = [
-        ...prev,
-        {
-          client: {
-            fullName: clientVal?.fullName,
-            id: clientVal?.id,
-            phoneNumber: clientVal?.phoneNumber
-          },
-          date: selectedDate,
-          duration: call === 'followup' ? 20 : 40,
-          startTime: selectedSlot!,
-          title,
-          type: call!,
-          dayOfWeek: getDay(selectedDate),
-          note: note
-        }
-      ]
-      return updated.sort((a, b) => a.startTime - b.startTime)
-    })
-    setOpen(false)
+    const newBooking = {
+      client: {
+        fullName: clientVal?.fullName,
+        id: clientVal?.id,
+        phoneNumber: clientVal?.phoneNumber
+      },
+      date: selectedDate,
+      duration: call === 'followup' ? 20 : 40,
+      startTime: selectedSlot!,
+      title,
+      type: call!,
+      dayOfWeek: getDay(selectedDate),
+      note: note
+    }
+
+    try {
+      setSubmitting(true)
+      const docRef = await addDoc(collection(db, 'bookings'), newBooking)
+      toast.success('Booking created with Id: ' + docRef.id)
+      setBookings((prev) => {
+        const updated: Booking[] = [...prev, newBooking]
+        return updated.sort((a, b) => a.startTime - b.startTime)
+      })
+      setOpen(false)
+    } catch (error) {
+      console.log('[Booking_ERR]', error)
+      toast.error('Unable to create booking, try again')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const resetForm = () => {
@@ -170,7 +182,11 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleCallBook} className="bg-chart-4 text-white hover:bg-chart-4/50">
+            <Button
+              disabled={submitting}
+              onClick={handleCallBook}
+              className="bg-chart-4 text-white hover:bg-chart-4/50"
+            >
               Book Call
             </Button>
           </DialogFooter>

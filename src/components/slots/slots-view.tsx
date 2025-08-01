@@ -128,6 +128,8 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
             } else {
               return (
                 <SlotEmpty
+                  selectedDate={selectedDate}
+                  startTime={slot.startTime}
                   key={`${idx}-slot-empty`}
                   handleAvailableSlotClick={() => {
                     setSelectedSlot(slot.startTime)
