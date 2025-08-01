@@ -104,3 +104,47 @@ setDate(new Date('2025-07-01'), 20) // → 2025-07-20
 ```
 
 ---
+
+# Firebase Schema
+
+```ts
+interface Booking {
+  client: {
+    fullName: string
+    id: string
+    phoneNumber: string
+  }
+  date: Date
+  dayOfWeek: number // 0-6 (Sunday to Saturday)
+  duration: number // Duration in minutes (20 for followup and 40 for onboarding)
+  note?: string // Optional field
+  startTime: number // Minutes from midnight (starttime of slot, 10:30 -> 630)
+  title: string
+  type: 'onboarding' | 'followup'
+}
+```
+
+# Assumptions Made
+
+- Followups are weekly only
+- Onboarding are one time
+- can only book empty slots (2 consecutive empty - eligible for both, single empty -only follow up)
+- 7:10 slot is only follow up
+- past slots are expired cannot be booked
+
+# Run
+
+1. use
+
+```sh
+npm i
+npm run dev
+```
+
+2. To seed firebase client
+
+> Either use dotenv cause node environment can't get NEXT_PUBLIC prefixed variables or dont use .env for the script use firebase config directly, command
+
+```
+npm run script
+```
