@@ -2,10 +2,13 @@
 
 import Calendar from '@/components/calendar/calendar'
 import Header from '@/components/header'
-import SlotsView from '@/components/slots/slots-view'
+import { getLabel } from '@/components/slots/slot-time'
+import SlotsView, { Booking } from '@/components/slots/slots-view'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { db } from '@/firebase/firebase.config'
 import { useTheme } from '@/hooks/use-theme'
-import React, { useMemo, useState } from 'react'
+import { collection, getDocs, query, Timestamp, where } from 'firebase/firestore'
+import React, { useEffect, useMemo, useState } from 'react'
 
 export default function Home() {
   const { theme } = useTheme()
@@ -13,6 +16,40 @@ export default function Home() {
     return new Date()
   }, [])
   const [selectedDate, setSelectedDate] = useState<Date>(today)
+  const [todaysBookings, setTodaysBookings] = useState<Booking[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  console.log(todaysBookings)
+
+  useEffect(() => {
+    const getBookingToday = async () => {
+      try {
+        setIsLoading(true)
+        const bookingsRef = collection(db, 'bookings')
+
+        const startOfDay = new Date(Date.now())
+        startOfDay.setHours(0, 0, 0, 0)
+
+        const endOfDay = new Date(Date.now())
+        endOfDay.setHours(23, 59, 59, 999)
+
+        const q1 = query(
+          bookingsRef,
+          where('date', '>=', Timestamp.fromDate(startOfDay)),
+          where('date', '<=', Timestamp.fromDate(endOfDay))
+        )
+        const snap1 = await getDocs(q1)
+        const oneTime = snap1.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Booking[]
+
+        setTodaysBookings(oneTime)
+      } catch (error) {
+        console.log('[Bookings_fetch_ERR] ', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    getBookingToday()
+  }, [])
 
   if (!theme) {
     return (
@@ -48,10 +85,24 @@ export default function Home() {
             </div>
             <div className="border p-4 bg-background rounded-xl">
               <h3 className="font-semibold mb-2">Today&apos;s Schedule</h3>
-              <ul className="list-disc pl-4 text-sm text-muted-foreground">
-                <li>🧘‍♂️ Meditation - 8:00 AM</li>
-                <li>🩺 Dr. Strange Consultation - 11:00 AM</li>
-                <li>💊 Medicine Reminder - 5:00 PM</li>
+              <ul className="list-disc pl-4 space-y-2 text-sm text-muted-foreground">
+                {isLoading ? (
+                  <>Loading...</>
+                ) : (
+                  todaysBookings
+                    .sort((a, b) => a.startTime - b.startTime)
+                    .map((booking) => {
+                      return (
+                        <li key={booking.id}>
+                          {booking.type === 'onboarding'
+                            ? '💙 Onboarding with'
+                            : '💚 Follow Up with'}{' '}
+                          <span className="font-semibold">{booking.client.fullName}</span> at{' '}
+                          {getLabel(booking.startTime)}
+                        </li>
+                      )
+                    })
+                )}
               </ul>
             </div>
           </div>

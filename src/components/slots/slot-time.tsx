@@ -5,7 +5,7 @@ type SlotTimeProps = {
   slot: TimeSlot
 }
 
-const getLabel = (startTime: number): string => {
+export const getLabel = (startTime: number): string => {
   const hours = Math.floor(startTime / 60)
   const minutes = startTime % 60
   const period = hours >= 12 ? 'PM' : 'AM'

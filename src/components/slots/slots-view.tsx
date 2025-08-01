@@ -3,9 +3,10 @@ import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
 import SlotTime from './slot-time'
 import SlotBookingDialog from './slot-booking-dialog'
-import { collection, getDocs, query, where, and } from 'firebase/firestore'
+import { collection, getDocs, query, where, and, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase/firebase.config'
 import { getDay } from 'date-fns'
+import { Skeleton } from '../ui/skeleton'
 
 type SlotsViewProps = {
   selectedDate: Date
@@ -17,6 +18,7 @@ export type TimeSlot = {
 }
 
 export type Booking = {
+  id: string
   type: 'onboarding' | 'followup'
   startTime: number // minutes from midnight 10:30 -> 630, 7:30 -> 19 * 60 + 30
   duration: number // in minutes
@@ -111,23 +113,26 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
         setIsLoading(true)
         const bookingsRef = collection(db, 'bookings')
 
+        const startOfDay = new Date(selectedDate)
+        startOfDay.setHours(0, 0, 0, 0)
+
+        const endOfDay = new Date(selectedDate)
+        endOfDay.setHours(23, 59, 59, 999)
+
         const q1 = query(
           bookingsRef,
-          and(where('date', '==', selectedDate), where('type', '==', 'onboarding'))
+          where('date', '>=', Timestamp.fromDate(startOfDay)),
+          where('date', '<=', Timestamp.fromDate(endOfDay))
         )
         const snap1 = await getDocs(q1)
-        const oneTime = snap1.docs.map((doc) => doc.data())
-
-        console.log(oneTime)
+        const oneTime = snap1.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 
         const q2 = query(
           bookingsRef,
           and(where('dayOfWeek', '==', getDay(selectedDate)), where('type', '==', 'followup'))
         )
         const snap2 = await getDocs(q2)
-        const recurring = snap2.docs.map((doc) => doc.data())
-
-        console.log(recurring)
+        const recurring = snap2.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 
         const finalBookings = [...oneTime, ...recurring] as Booking[]
         setBookings(finalBookings)
@@ -143,6 +148,16 @@ const SlotsView: React.FC<SlotsViewProps> = (props) => {
   useEffect(() => {
     if (!open) setSelectedSlot(null)
   }, [open])
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, idx) => {
+          return <Skeleton key={`${idx}-skeleton`} className="w-full h-28 bg-background" />
+        })}
+      </div>
+    )
+  }
 
   return (
     <section className="space-y-8">

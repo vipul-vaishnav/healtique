@@ -73,7 +73,7 @@ const SlotBookingDialog: React.FC<SlotBookingDialogProps> = (props) => {
       const docRef = await addDoc(collection(db, 'bookings'), newBooking)
       toast.success('Booking created with Id: ' + docRef.id)
       setBookings((prev) => {
-        const updated: Booking[] = [...prev, newBooking]
+        const updated: Booking[] = [...prev, { id: docRef.id, ...newBooking }]
         return updated.sort((a, b) => a.startTime - b.startTime)
       })
       setOpen(false)
