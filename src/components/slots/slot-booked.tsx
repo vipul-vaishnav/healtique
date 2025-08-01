@@ -6,6 +6,7 @@ type SlotBookedProps = {
     type: 'booked' | 'empty'
     booking?: Booking
     span: number
+    startTime: number
   }
 }
 

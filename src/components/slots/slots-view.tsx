@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import SlotBooked from './slot-booked'
 import SlotEmpty from './slot-empty'
 import SlotTime from './slot-time'
-import { ClientsCombobox } from '../clients-combobox'
+import SlotBookingDialog from './slot-booking-dialog'
 
 type SlotsViewProps = {
   dummy?: boolean
@@ -101,9 +101,16 @@ const generateSlotsObjArray = () => {
 const SlotsView: React.FC<SlotsViewProps> = () => {
   const slots = generateSlotsObjArray()
   const [bookings, setBookings] = useState<Booking[]>(dummyBookings)
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
+  const [open, setOpen] = useState(false)
 
   const generateSlotsWithBookings = () => {
-    const bookingSlots: Array<{ type: 'booked' | 'empty'; booking?: Booking; span: number }> = []
+    const bookingSlots: Array<{
+      type: 'booked' | 'empty'
+      booking?: Booking
+      span: number
+      startTime: number
+    }> = []
     for (let i = 0; i < slots.length; ) {
       const slot = slots[i]
       const booking = bookings.find((booking) => booking.startTime === slot.startTime)
@@ -111,6 +118,7 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
         const span = booking.duration / 20
         bookingSlots.push({
           type: 'booked',
+          startTime: slot.startTime,
           booking,
           span
         })
@@ -118,6 +126,7 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
       } else {
         bookingSlots.push({
           type: 'booked',
+          startTime: slot.startTime,
           span: 1
         })
         i += 1
@@ -128,7 +137,7 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
 
   return (
     <section className="space-y-8">
-      <ClientsCombobox />
+      <SlotBookingDialog open={open} setOpen={setOpen} />
       <div className="bg-background rounded-xl grid grid-cols-[144px_1fr] overflow-hidden">
         <div>
           {slots.map((slot, idx) => {
@@ -140,7 +149,15 @@ const SlotsView: React.FC<SlotsViewProps> = () => {
             if (slot.booking) {
               return <SlotBooked key={`${idx}-slot-booked`} slot={slot} />
             } else {
-              return <SlotEmpty handleAvailableSlotClick={() => {}} key={`${idx}-slot-empty`} />
+              return (
+                <SlotEmpty
+                  key={`${idx}-slot-empty`}
+                  handleAvailableSlotClick={() => {
+                    setSelectedSlot(slot.startTime)
+                    setOpen(true)
+                  }}
+                />
+              )
             }
           })}
         </div>
