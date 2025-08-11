@@ -9,7 +9,7 @@ Tech Stack
 
 # Calendar Helpers
 
-Great question! Let's break down what each of these `date-fns` functions do — super useful when building a calendar UI or working with dates. Here's your cheat sheet:
+`date-fns` utils for calendar builder
 
 ---
 
