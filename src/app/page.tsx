@@ -3,12 +3,11 @@
 import Calendar from '@/components/calendar/calendar'
 import Header from '@/components/header'
 import { getLabel } from '@/components/slots/slot-time'
-import SlotsView, { Booking } from '@/components/slots/slots-view'
+import SlotsView from '@/components/slots/slots-view'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { db } from '@/firebase/firebase.config'
+import { useSlotsData } from '@/hooks/use-slots-data'
 import { useTheme } from '@/hooks/use-theme'
-import { collection, getDocs, query, Timestamp, where } from 'firebase/firestore'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 export default function Home() {
   const { theme } = useTheme()
@@ -16,38 +15,7 @@ export default function Home() {
     return new Date()
   }, [])
   const [selectedDate, setSelectedDate] = useState<Date>(today)
-  const [todaysBookings, setTodaysBookings] = useState<Booking[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    const getBookingToday = async () => {
-      try {
-        setIsLoading(true)
-        const bookingsRef = collection(db, 'bookings')
-
-        const startOfDay = new Date(Date.now())
-        startOfDay.setHours(0, 0, 0, 0)
-
-        const endOfDay = new Date(Date.now())
-        endOfDay.setHours(23, 59, 59, 999)
-
-        const q1 = query(
-          bookingsRef,
-          where('date', '>=', Timestamp.fromDate(startOfDay)),
-          where('date', '<=', Timestamp.fromDate(endOfDay))
-        )
-        const snap1 = await getDocs(q1)
-        const oneTime = snap1.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Booking[]
-
-        setTodaysBookings(oneTime)
-      } catch (error) {
-        console.log('[Bookings_fetch_ERR] ', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    getBookingToday()
-  }, [])
+  const { bookings: todaysBookings, isLoading } = useSlotsData(today)
 
   if (!theme) {
     return (
